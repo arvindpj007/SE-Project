@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.android.xpenseauditor.AddCategoryActivity"
+    tools:showIn="@layout/activity_add_category">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="ADD A NEW CATEGORY"
+            android:textSize="30sp"
+            android:textColor="#000"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/newCategoryNameWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/btn_login"
+            android:layout_marginTop="4dp">
+
+            <EditText
+                android:id="@+id/newCategoryName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textColorHint="@color/btn_login"
+                android:textColor="@color/btn_login"
+                android:hint="Category"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/budgetWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/btn_login"
+            android:layout_below="@id/newCategoryNameWrapper"
+            android:layout_marginTop="4dp">
+
+            <EditText
+                android:id="@+id/newBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textColorHint="@color/btn_login"
+                android:textColor="@color/btn_login"
+                android:hint="Budget"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.ButtonBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/budgetWrapper">
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/submit_addCat"
+                android:text="SUBMIT"/>
+        </android.support.v7.widget.ButtonBarLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
