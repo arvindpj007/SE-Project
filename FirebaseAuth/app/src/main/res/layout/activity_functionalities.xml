@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Functionalities"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/addTran"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Transaction" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/showTrans"
+        android:text="Show All Transactions"/>
+
+    <Button
+        android:id="@+id/addCat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Category" />
+
+    <Button
+        android:id="@+id/setBudget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Category Budget" />
+
+    <Button
+        android:id="@+id/CatTrans"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Categorised Transaction" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Analysis" />
+
+    <Button
+        android:id="@+id/profileTrial"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Profile"/>
+
+    <Button
+        android:id="@+id/settingsTrial"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Settings"/>
+
+    <Button
+        android:id="@+id/Home"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Home"/>
+</LinearLayout>
