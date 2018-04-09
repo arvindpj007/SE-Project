@@ -69,12 +69,31 @@
 
 
 
-                <Button
-                    android:id="@+id/pressme"
+                <Spinner
+                    android:id="@+id/spinDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PRESS" />
+                    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/setDate"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:text="Set Date" />
+                <Button
+                    android:id="@+id/pressme"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:text="Get Chart" />
+
+                </LinearLayout>
                 <include layout="@layout/content_analysis"/>
+
+
 
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>

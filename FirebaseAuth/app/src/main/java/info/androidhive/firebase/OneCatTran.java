@@ -14,6 +14,7 @@ import com.firebase.client.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class OneCatTran extends AppCompatActivity {
@@ -32,13 +33,19 @@ public class OneCatTran extends AppCompatActivity {
         String OneTcat = intent.getStringExtra("name");
         //Toast.makeText(this,OneTcat,Toast.LENGTH_LONG).show();
 
+        Calendar c = Calendar.getInstance();
+        int d = c.get(Calendar.DAY_OF_MONTH);
+        int m = c.get(Calendar.MONTH)+1;
+        int y = c.get(Calendar.YEAR);
+
+
         mRootRef=new Firebase("https://expense-2a69a.firebaseio.com/");
 
         mRootRef.keepSynced(true);
         com.google.firebase.auth.FirebaseAuth auth = FirebaseAuth.getInstance();
         String Uid=auth.getUid();
         RefUid= mRootRef.child(Uid);
-        RefCat=RefUid.child("CatTran");
+        RefCat=RefUid.child("DateRange").child(m+"-"+y).child("CatTran");
         OneRefCat=RefCat.child(OneTcat);
 
 
@@ -55,12 +62,13 @@ public class OneCatTran extends AppCompatActivity {
 
 
         OneRefCat.addChildEventListener(new ChildEventListener() {
-            String amount,cat,shname,shDay,shMonth,shYear;
+            String amount,cat,shname,shDay,shMonth,shYear,shMsg;
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 int i=0;
 
+                String tid = dataSnapshot.getKey().toString().trim();
                 for (DataSnapshot S:dataSnapshot.getChildren()) {
                     //String t_id=S.getValue().toString().trim();
                     //Toast.makeText(getApplicationContext(),"->"+i,Toast.LENGTH_SHORT).show();
@@ -85,13 +93,16 @@ public class OneCatTran extends AppCompatActivity {
                         case 5:
                             shYear=S.getValue().toString().trim();
                             break;
+                        case 6:
+                            shMsg=S.getValue().toString().trim();
+                            break;
                     }
                     //Transaction transaction=S.getValue(Transaction.class);
                     //transList.add(transaction);
                     i++;
                 }
                 String shdate= shDay+" - "+shMonth+" - "+shYear;
-                Transaction transaction=new Transaction(amount,cat,shname,shdate);
+                Transaction transaction=new Transaction(tid,amount,cat,shname,shdate,shMsg);
                 //Toast.makeText(getApplicationContext(),transaction.getT_amt(),Toast.LENGTH_SHORT).show();
                 transList.add(transaction);
                 mAdapter.notifyDataSetChanged();

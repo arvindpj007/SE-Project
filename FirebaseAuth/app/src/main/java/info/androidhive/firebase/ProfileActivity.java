@@ -3,14 +3,12 @@ package info.androidhive.firebase;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,33 +16,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import static android.provider.CalendarContract.CalendarCache.URI;
 
 public class ProfileActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,6 +52,8 @@ public class ProfileActivity extends AppCompatActivity
     StorageReference storageReference, filepath,storageRef;
     ImageButton changePic;
     ImageView userImage;
+    TextView tvHeaderName, tvHeaderMail;
+    ImageView userImageNavHead;
     Uri imageUri = null;
     String Uid;
 
@@ -143,6 +135,11 @@ public class ProfileActivity extends AppCompatActivity
 
         }*/
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View navHeaderView =  navigationView.getHeaderView(0);
+        tvHeaderName = (TextView)navHeaderView.findViewById(R.id.headerName);
+        tvHeaderMail = (TextView)navHeaderView.findViewById(R.id.headerEmail);
+        userImageNavHead = (ImageView)navHeaderView.findViewById(R.id.imageView);
 
         changePic = (ImageButton) findViewById(R.id.changePic);
         changePic.setOnClickListener(new View.OnClickListener() {
@@ -167,6 +164,7 @@ public class ProfileActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot DS) {
                 String n = DS.getValue(String.class);
                 NameView.setText(n);
+                tvHeaderName.setText(n);
             }
 
             @Override
@@ -179,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot DS) {
                 String n = DS.getValue().toString().trim();
-
+                tvHeaderMail.setText(n);
                 EmailView.setText(n);
             }
 
@@ -287,8 +285,24 @@ public class ProfileActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        try {
+            final File localFile = File.createTempFile("images", "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    userImageNavHead.setImageBitmap(bitmap);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        } catch (IOException e ) {}
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override

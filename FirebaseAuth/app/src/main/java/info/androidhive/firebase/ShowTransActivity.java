@@ -1,7 +1,7 @@
 package info.androidhive.firebase;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,11 +56,12 @@ public class ShowTransActivity extends AppCompatActivity {
 
 
         RefTran.addChildEventListener(new ChildEventListener() {
-            String amount,cat,shname,shDay,shMonth,shYear;
+            String amount,cat,shname,shDay,shMonth,shYear,shMsg;
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 int i=0;
+                String tid = dataSnapshot.getKey().toString().trim();
 
                 for (DataSnapshot S:dataSnapshot.getChildren()) {
                     //String t_id=S.getValue().toString().trim();
@@ -86,13 +87,20 @@ public class ShowTransActivity extends AppCompatActivity {
                         case 5:
                             shYear=S.getValue().toString().trim();
                             break;
+                        case 6:
+                            shMsg=S.getValue().toString().trim();
+                            break;
                     }
                     //Transaction transaction=S.getValue(Transaction.class);
                     //transList.add(transaction);
                     i++;
                 }
                 String shdate= shDay+" - "+shMonth+" - "+shYear;
-                Transaction transaction=new Transaction(amount,cat,shname,shdate);
+                Transaction transaction=new Transaction(tid,amount,cat,shname,shdate,shMsg);
+                amount="";
+                cat="";
+                shname="";
+                shdate="";
                 //Toast.makeText(getApplicationContext(),transaction.getT_amt(),Toast.LENGTH_SHORT).show();
                 transList.add(transaction);
                 mAdapter.notifyDataSetChanged();

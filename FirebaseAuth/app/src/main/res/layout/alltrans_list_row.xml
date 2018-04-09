@@ -7,10 +7,20 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants"
     android:paddingBottom="@dimen/row_padding_vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/row_padding_vertical">
+
+    <TextView
+        android:id="@+id/tid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textColor="@color/title"
+        android:textSize="10dp"
+        android:textStyle="bold"  />
 
     <TextView
         android:id="@+id/tshopname"
@@ -19,6 +29,7 @@
         android:layout_alignParentTop="true"
         android:textColor="@color/title"
         android:textSize="25dp"
+        android:paddingTop="5dp"
         android:textStyle="bold" />
 
     <TextView

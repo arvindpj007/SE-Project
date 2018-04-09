@@ -40,7 +40,7 @@ public class AddCat extends AppCompatActivity {
                 RefCat.child(categ);
                 RefCat.child(categ).setValue(catbudg);
 
-                startActivity(new Intent(AddCat.this, ProfileManagement.class));
+                startActivity(new Intent(AddCat.this, HomeActivity.class));
             }
         });
 
