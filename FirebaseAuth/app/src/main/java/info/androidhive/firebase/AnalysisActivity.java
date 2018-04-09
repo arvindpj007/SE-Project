@@ -1,27 +1,32 @@
 package info.androidhive.firebase;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
@@ -37,14 +42,20 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.apache.commons.collections4.map.MultiValueMap;
 
-import java.io.Serializable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -57,9 +68,22 @@ public class AnalysisActivity extends AppCompatActivity
     private Firebase RefCatSum, RefTran,RefCat,OneRefCat;
     private List<Transaction> transList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private TransactionAdapter mAdapter;
+    private AnalysisAdapter mAdapter;
 
+    private Firebase RefName,RefEmail;
+    TextView tvHeaderName, tvHeaderMail;
+    StorageReference storageReference,storageRef;
+    ImageView userImage;
+    String Uid, saveDate="";
+
+
+    private DatePicker dp;
     private ArrayList<String> Catg=new ArrayList<>();
+
+    Spinner dateRangeSet;
+    private ArrayList<String>DateRangeSpin = new ArrayList<>();
+    private ArrayAdapter<String> arrayAdapterDate;
+
 
     List<String>catList = new ArrayList<>();
     List<Integer>amtList = new ArrayList<>();
@@ -68,12 +92,11 @@ public class AnalysisActivity extends AppCompatActivity
     int flagTime = -1;
     String SelCat;
     FirebaseAuth auth;
-    Button press;
+    Button press, setdate;
     ViewPager viewPage;
     LinearLayout sliderDots;
     int dotCount;
     private ImageView[] dots;
-    Button pressButton;
 
     ArrayAdapter<CatTransSum> getSumCat;
 
@@ -92,24 +115,81 @@ public class AnalysisActivity extends AppCompatActivity
        // setSupportActionBar(toolbar);
 
 
+        arrayAdapterDate=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,DateRangeSpin);
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //Changing contents of navigation header
+        mRootRef=new Firebase("https://expense-2a69a.firebaseio.com/");
+        mRootRef.keepSynced(true);
+        auth = FirebaseAuth.getInstance();
+        Uid=auth.getUid();
+        RefUid= mRootRef.child(Uid);
+        RefName = RefUid.child("Name");
+        RefEmail=RefUid.child("Email");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View navHeaderView =  navigationView.getHeaderView(0);
+        tvHeaderName = (TextView)navHeaderView.findViewById(R.id.headerName);
+        tvHeaderMail = (TextView)navHeaderView.findViewById(R.id.headerEmail);
+        userImage = (ImageView)navHeaderView.findViewById(R.id.imageView);
+        storageReference = FirebaseStorage.getInstance().getReference();
+        storageRef=storageReference.child("Profile Image").child(Uid+".jpg");
+        try {
+            final File localFile = File.createTempFile("images", "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    userImage.setImageBitmap(bitmap);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        } catch (IOException e ) {}
+
+
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        RefName.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tvHeaderName.setText(dataSnapshot.getValue().toString().trim());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        RefEmail.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tvHeaderMail.setText(dataSnapshot.getValue().toString().trim());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setTitle("Analysis");
 
-        pressButton = (Button)findViewById(R.id.pressme);
-
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_catanalysis);
 
-        mAdapter = new TransactionAdapter(transList);
+        mAdapter = new AnalysisAdapter(transList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -121,41 +201,14 @@ public class AnalysisActivity extends AppCompatActivity
 
         auth = FirebaseAuth.getInstance();
 
-        mRootRef=new Firebase("https://expense-2a69a.firebaseio.com/");
 
-        mRootRef.keepSynced(true);
-        com.google.firebase.auth.FirebaseAuth auth = FirebaseAuth.getInstance();
-        String Uid=auth.getUid();
-        RefUid= mRootRef.child(Uid);
-        RefCat=RefUid.child("CatTran");
-
-        RefTran = RefUid.child("Transactions");
-        RefCatSum=RefUid.child("CatSum");
-
-
-
-
-        press=(Button) findViewById(R.id.pressme);
-        press.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // Intent i=new Intent(AnalysisActivity.this,GraphActivity.class);
-               // startActivity(i);
-            }
-        });
-
-        RefCatSum.addChildEventListener(new ChildEventListener() {
+        dateRangeSet = (Spinner)findViewById(R.id.spinDate);
+        dateRangeSet.setAdapter(arrayAdapterDate);
+        RefUid.child("DateRange").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                String cat=dataSnapshot.getKey();
-                String amnt= dataSnapshot.getValue().toString().trim();
-                catList.add(cat);
-                amtList.add(Integer.parseInt(amnt));
-                /*
-                amount[amtcatIndex] = Integer.parseInt(amnt);
-                categories[amtcatIndex] = cat;
-                amtcatIndex++;*/
-                //Toast.makeText(getApplicationContext(),cat+","+amnt,Toast.LENGTH_SHORT).show();
+                DateRangeSpin.add(dataSnapshot.getKey().toString().trim());
+                arrayAdapterDate.notifyDataSetChanged();
             }
 
             @Override
@@ -179,10 +232,85 @@ public class AnalysisActivity extends AppCompatActivity
             }
         });
 
+        dateRangeSet.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                saveDate = adapterView.getItemAtPosition(i).toString().trim();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        press=(Button) findViewById(R.id.pressme);
+        setdate = (Button)findViewById(R.id.setDate);
+
+        setdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                amtList.clear();
+                catList.clear();
+
+                RefTran = RefUid.child("DateRange").child(saveDate).child("Transactions");
+                RefCatSum=RefUid.child("DateRange").child(saveDate).child("CatSum");
 
 
 
-        pressButton.setOnClickListener(this);
+                RefCatSum.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        String cat=dataSnapshot.getKey();
+                        String amnt= dataSnapshot.getValue().toString().trim();
+                        catList.add(cat);
+                        amtList.add(Integer.parseInt(amnt));
+                /*
+                amount[amtcatIndex] = Integer.parseInt(amnt);
+                categories[amtcatIndex] = cat;
+                amtcatIndex++;*/
+                        //Toast.makeText(getApplicationContext(),cat+","+amnt,Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+
+                    }
+                });
+
+
+
+            }
+        });
+
+
+
+        press.setOnClickListener(this);
+
+        //Month and Year picker
+        int mYear,mMonth,mDay;
+        Calendar c = Calendar.getInstance();
+        mYear = c.get(Calendar.YEAR);
+        mMonth = c.get(Calendar.MONTH);
+        mDay = c.get(Calendar.DAY_OF_MONTH);
+
+
 
     }
 
@@ -220,15 +348,16 @@ public class AnalysisActivity extends AppCompatActivity
 
                 transList.clear();
                 mAdapter.notifyDataSetChanged();
-                OneRefCat=RefCat.child(SelCat);
+                OneRefCat=RefUid.child("DateRange").child(saveDate).child("CatTran").child(SelCat);
 
                 OneRefCat.addChildEventListener(new ChildEventListener() {
-                String amount,cat,shname,shDay,shMonth,shYear;
+                String amount, cat, shname, shDay, shMonth, shYear, shMsg;
 
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     int i=0;
 
+                    String tid = dataSnapshot.getKey().toString().trim();
                     for (DataSnapshot S:dataSnapshot.getChildren()) {
                         //String t_id=S.getValue().toString().trim();
                         //Toast.makeText(getApplicationContext(),"->"+i,Toast.LENGTH_SHORT).show();
@@ -253,13 +382,16 @@ public class AnalysisActivity extends AppCompatActivity
                             case 5:
                                 shYear=S.getValue().toString().trim();
                                 break;
+                            case 6:
+                                shMsg=S.getValue().toString().trim();
+                                break;
                         }
                         //Transaction transaction=S.getValue(Transaction.class);
                         //transList.add(transaction);
                         i++;
                     }
                     String shdate= shDay+" - "+shMonth+" - "+shYear;
-                    Transaction transaction=new Transaction(amount,cat,shname,shdate);
+                    Transaction transaction=new Transaction(tid,amount,cat,shname,shdate,shMsg);
                     //Toast.makeText(getApplicationContext(),transaction.getT_amt(),Toast.LENGTH_SHORT).show();
                     transList.add(transaction);
                     mAdapter.notifyDataSetChanged();
@@ -410,9 +542,15 @@ public class AnalysisActivity extends AppCompatActivity
     @Override
     public void onClick(View v) {
 
+        if(saveDate==""){
+            Toast.makeText(getApplicationContext(),"Set the date first", Toast.LENGTH_SHORT).show();
+        }
+
+        else{
+
         amount = amtList.toArray(new Integer[amtList.size()]);
         categories = catList.toArray(new String[catList.size()]);
-        setUpPieChart();
+        setUpPieChart();}
 
     }
 }

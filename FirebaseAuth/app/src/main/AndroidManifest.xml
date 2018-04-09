@@ -93,7 +93,11 @@
         <activity android:name=".Rate" />
         <activity android:name=".Suggest" />
         <activity android:name=".ContactUs" />
-        <activity android:name=".PrefSettingsActivity"></activity>
+        <activity android:name=".PrefSettingsActivity" />
+        <activity android:name=".PercentExpense" />
+        <activity android:name=".CatExpPer" />
+        <activity android:name=".SMSTransShow" />
+        <activity android:name=".SMScat"></activity>
     </application>
 
 </manifest>

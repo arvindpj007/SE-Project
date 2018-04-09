@@ -1,22 +1,39 @@
 package info.androidhive.firebase;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.IOException;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,6 +42,16 @@ public class HomeActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     FirebaseAuth auth;
+    ImageView userImage;
+
+    private Firebase mRootRef;
+    private Firebase RefUid;
+    private Firebase RefName,RefEmail;
+    TextView tvHeaderName, tvHeaderMail;
+    StorageReference storageReference, filepath,storageRef;
+    Uri imageUri = null;
+    String Uid;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +75,65 @@ public class HomeActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //Changing contents of navigation header
+        mRootRef=new Firebase("https://expense-2a69a.firebaseio.com/");
+        mRootRef.keepSynced(true);
+        auth = FirebaseAuth.getInstance();
+        Uid=auth.getUid();
+        RefUid= mRootRef.child(Uid);
+        RefName = RefUid.child("Name");
+        RefEmail=RefUid.child("Email");
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View navHeaderView =  navigationView.getHeaderView(0);
+        tvHeaderName = (TextView)navHeaderView.findViewById(R.id.headerName);
+        tvHeaderMail = (TextView)navHeaderView.findViewById(R.id.headerEmail);
+        userImage = (ImageView)navHeaderView.findViewById(R.id.imageView);
+        storageReference = FirebaseStorage.getInstance().getReference();
+        storageRef=storageReference.child("Profile Image").child(Uid+".jpg");
+        try {
+            final File localFile = File.createTempFile("images", "jpg");
+            storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    userImage.setImageBitmap(bitmap);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            });
+        } catch (IOException e ) {}
+
+
         navigationView.setNavigationItemSelectedListener(this);
 
-        auth = FirebaseAuth.getInstance();
+
+        RefName.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tvHeaderName.setText(dataSnapshot.getValue().toString().trim());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        RefEmail.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tvHeaderMail.setText(dataSnapshot.getValue().toString().trim());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
 
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);

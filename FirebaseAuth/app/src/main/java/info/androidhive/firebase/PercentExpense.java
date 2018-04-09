@@ -1,5 +1,6 @@
 package info.androidhive.firebase;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,27 +18,27 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class CategTrans extends AppCompatActivity {
+public class PercentExpense extends AppCompatActivity {
+
     private ListView catView;
     private ArrayList<String> Catg=new ArrayList<>();
     private Firebase mRootRef;
     private Firebase RefUid;
     private Firebase RefCat;
+    private ProgressDialog progressMsg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_categ_trans);
+        setContentView(R.layout.activity_percent_expense);
 
-
-        catView = (ListView) findViewById((R.id.TCatList));
+        catView = (ListView) findViewById((R.id.PerCatList));
         final ArrayAdapter<String> arrayAdapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,Catg);
         catView.setAdapter(arrayAdapter);
 
-
         Calendar c = Calendar.getInstance();
-        int d = c.get(Calendar.DAY_OF_MONTH);
-        int m = c.get(Calendar.MONTH)+1;
-        int y = c.get(Calendar.YEAR);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int month = c.get(Calendar.MONTH)+1;
+        int year = c.get(Calendar.YEAR);
 
         mRootRef=new Firebase("https://expense-2a69a.firebaseio.com/");
 
@@ -45,7 +46,7 @@ public class CategTrans extends AppCompatActivity {
         com.google.firebase.auth.FirebaseAuth auth = FirebaseAuth.getInstance();
         String Uid=auth.getUid();
         RefUid= mRootRef.child(Uid);
-        RefCat=RefUid.child("DateRange").child(m+"-"+y).child("CatTran");
+        RefCat=RefUid.child("DateRange").child(month+"-"+year).child("CatTran");
 
 
         RefCat.addChildEventListener(new ChildEventListener() {
@@ -78,23 +79,23 @@ public class CategTrans extends AppCompatActivity {
         });
 
 
+        catView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+            String catSum, budget;
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
-
-        catView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            public void onItemClick(AdapterView<?> arg0,View arg1, int pos, long arg3)
-            {
-
-                Intent n = new Intent(getApplicationContext(), OneCatTran.class);
-                String data=(String)arg0.getItemAtPosition(pos);
+                Intent n = new Intent(getApplicationContext(), CatExpPer.class);
+                String data=(String)parent.getItemAtPosition(pos);
                 //Toast.makeText(getApplicationContext(),data,Toast.LENGTH_LONG);
                 n.putExtra("name", data);
                 startActivity(n);
-            }
+
+
+                }
         });
 
 
-
     }
+
 }
