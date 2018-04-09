@@ -31,6 +31,7 @@
         android:id="@+id/t_shop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAllCaps="true"
         android:layout_below="@id/t_ll1"
         android:textStyle="bold"
         android:textColor="@color/title"
