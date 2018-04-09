@@ -112,7 +112,7 @@ public class AnalysisActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analysis);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
 
         arrayAdapterDate=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,DateRangeSpin);
