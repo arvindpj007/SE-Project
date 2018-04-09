@@ -151,9 +151,13 @@ public class Transac extends AppCompatActivity {
                         RefCatSum1.child(category).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                categorySum = Integer.parseInt(dataSnapshot.getValue().toString().trim());
-                                categorySum = categorySum + Integer.parseInt(Amount);
-                                dataSnapshot.getRef().setValue(categorySum);
+                                try {
+                                    categorySum = Integer.parseInt(dataSnapshot.getValue().toString().trim());
+                                    categorySum = categorySum + Integer.parseInt(Amount);
+                                    dataSnapshot.getRef().setValue(categorySum);
+                                }catch (Exception e){
+                                    dataSnapshot.getRef().setValue(Integer.parseInt(Amount));
+                                }
                             }
 
                             @Override

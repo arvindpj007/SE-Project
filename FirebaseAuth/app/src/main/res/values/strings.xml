@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Firebase Auth</string>
+    <string name="app_name">XpensAuditor</string>
     <string name="action_sign_in_short">Register</string>
     <string name="email">Email</string>
     <string name="minimum_password">Password too short, enter minimum 6 characters!</string>
@@ -9,15 +9,15 @@
     <string name="send_password_reset_email">Send Password reset email</string>
     <string name="remove_user">Remove user</string>
     <string name="new_pass">New Password</string>
-    <string name="title_activity_profile">Firebase</string>
+    <string name="title_activity_profile">Profile</string>
     <string name="title_activity_login">Sign in</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>
-    <string name="btn_link_to_register">Not a member? Get registered in Firebase now!</string>
-    <string name="btn_link_to_login">Already registered. Login Me!</string>
-    <string name="title_activity_reset_password">ResetPasswordActivity</string>
+    <string name="btn_link_to_register">Not a member? Get registered in XpensAuditor now!</string>
+    <string name="btn_link_to_login">Already registered. Login!</string>
+    <string name="title_activity_reset_password">Reset Password</string>
     <string name="btn_forgot_password">Forgot your password?</string>
     <string name="btn_reset_password">Reset Password</string>
     <string name="btn_back"><![CDATA[<< Back]]></string>
@@ -129,14 +129,14 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_sign_set_budget">SignSetBudget</string>
+    <string name="title_activity_sign_set_budget">Set Budget</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="title_activity_edit_profile">EditProfile</string>
-    <string name="title_activity_settings">SettingsActivity</string>
-    <string name="title_activity_category_list">CategoryList</string>
-    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_edit_profile">Edit Profile</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_category_list">Category List</string>
+    <string name="title_activity_home">Home</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

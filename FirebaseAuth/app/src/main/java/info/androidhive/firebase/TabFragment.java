@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -127,7 +126,7 @@ public class TabFragment extends Fragment {
 
 
 
-        Toast.makeText(getContext(),currentMonth+"/"+currentYear,Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(),currentMonth+"/"+currentYear,Toast.LENGTH_SHORT).show();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(view.getContext());
@@ -183,14 +182,18 @@ public class TabFragment extends Fragment {
                 RefUid.child("DateRange").child(currentMonth+"-"+currentYear).child("CatSum").child(delCategory).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String sumCat = dataSnapshot.getValue().toString().trim();
-                        intSum = Integer.parseInt(sumCat);
-                        Integer newDelAmt = Integer.parseInt(delAmt);
-                        intSum = intSum - newDelAmt;
-                        if(intSum==0)
+                        try {
+                            String sumCat = dataSnapshot.getValue().toString().trim();
+                            intSum = Integer.parseInt(sumCat);
+                            Integer newDelAmt = Integer.parseInt(delAmt);
+                            intSum = intSum - newDelAmt;
+                            if (intSum == 0)
+                                dataSnapshot.getRef().removeValue();
+                            else
+                                dataSnapshot.getRef().setValue(String.valueOf(intSum));
+                        }catch (Exception e){
                             dataSnapshot.getRef().removeValue();
-                        else
-                            dataSnapshot.getRef().setValue(String.valueOf(intSum));
+                        }
                     }
 
                     @Override
